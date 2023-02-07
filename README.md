@@ -12,5 +12,5 @@
 
 ---
 
-FI: https://fullstackopen.com/
-EN: https://fullstackopen.com/en/
+#### FI: https://fullstackopen.com/  
+#### EN: https://fullstackopen.com/en/
