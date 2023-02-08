@@ -1,0 +1,10 @@
+.name {
+  text-align: left;
+  margin: "0 auto";
+}
+
+.value {
+  text-align: center;
+  margin: "0 auto";
+  width: 8rem;
+}
