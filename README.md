@@ -4,7 +4,7 @@
 | **Part**|**Status**|**Date Completed**|
 |:---|:---:|:---:|
 | part0|:heavy_check_mark:|07.02.2023|
-| part1|:x:||
+| part1|:heavy_check_mark:|08.02.2023|
 | part2|:x:||
 | part3|:x:||
 | part4|:x:||
