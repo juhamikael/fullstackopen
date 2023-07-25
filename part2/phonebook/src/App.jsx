@@ -173,6 +173,7 @@ const App = () => {
     const existingPerson = persons.find(
       (person) => person.name.trim().toLowerCase() === trimmedName
     );
+
     const existingNumber = persons.find(
       (person) => person.number.trim() === trimmedNumber
     );
@@ -184,6 +185,7 @@ const App = () => {
         )} is already added to the phonebook, replace the old number with a new one?`
       );
       if (!confirm) {
+        setMessageType(false);
         showNotification(`Cancelled phonenumber update for '${Capitalize(trimmedName)}.'`);
         return;
       }
@@ -237,7 +239,7 @@ const App = () => {
       .delete(id)
       .then(() => {
         setPersons(persons.filter((person) => person.id !== id));
-        setMessageType(true);
+        setMessageType(false);
         showNotification(`${person.name} has been deleted.`);
       })
       .catch((error) => {
