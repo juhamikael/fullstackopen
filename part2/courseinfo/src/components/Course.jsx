@@ -1,7 +1,7 @@
 const Header = (props) => {
-    const { course } = props;
-    return <h1>{course}</h1>;
-  };
+  const { course } = props;
+  return <h1>{course}</h1>;
+};
 
 const Content = (props) => {
   const { parts } = props;
@@ -31,12 +31,13 @@ const Total = (props) => {
     return acc + cur.exercises;
   }, 0);
 
-  return <div>Number of exercises {total}</div>;
+  return <div style={{
+    fontWeight: "bold"
+  }}>Number of exercises {total}</div>;
 };
 
 const Course = (props) => {
   const { course } = props;
-  console.log(course);
   return (
     <>
       <Header course={course.name} />
