@@ -178,6 +178,15 @@ const App = () => {
     );
 
     if (existingPerson) {
+      const confirm = window.confirm(
+        `${Capitalize(
+          trimmedName
+        )} is already added to the phonebook, replace the old number with a new one?`
+      );
+      if (!confirm) {
+        showNotification(`Cancelled phonenumber update for '${Capitalize(trimmedName)}.'`);
+        return;
+      }
       numberService
         .update(existingPerson.id, {
           ...existingPerson,
