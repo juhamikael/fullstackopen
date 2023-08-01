@@ -82,7 +82,7 @@ const PersonForm = ({
               value={newNumber}
               placeholder="Enter number"
               type="tel"
-              pattern="[0-9 -]*"
+              pattern="^[0-9 \-]*$"
             />
           </div>
         </div>
@@ -130,10 +130,21 @@ const Notification = ({ message, messageType }) => {
     marginBottom: "10px",
   };
 
+  const paragraphStyle = {
+    margin: "0px",
+  };
   if (message === null) {
     return null;
   }
-  return <div style={style}>{message}</div>;
+  return (
+    <div style={style}>
+      {message.map((msg, index) => (
+        <p style={paragraphStyle} key={index}>
+          {msg}
+        </p>
+      ))}
+    </div>
+  );
 };
 
 const Capitalize = (string) => {
@@ -163,7 +174,7 @@ const App = () => {
     setMessage(message);
     setTimeout(() => {
       setMessage(null);
-    }, 2500);
+    }, 5000);
   };
 
   const handleSubmit = (event) => {
@@ -186,7 +197,9 @@ const App = () => {
       );
       if (!confirm) {
         setMessageType(false);
-        showNotification(`Cancelled phonenumber update for '${Capitalize(trimmedName)}.'`);
+        showNotification([
+          `Cancelled phonenumber update for '${Capitalize(trimmedName)}.'`,
+        ]);
         return;
       }
       numberService
@@ -201,19 +214,19 @@ const App = () => {
             )
           );
           setMessageType(true);
-          showNotification(`${Capitalize(trimmedName)} has been updated.`);
+          showNotification([`${Capitalize(trimmedName)} has been updated.`]);
           setNewName("");
           setNewNumber("");
         })
         .catch((error) => {
           console.error(error);
           setMessageType(false);
-          showNotification(`Failed to update ${Capitalize(trimmedName)}.`);
+          showNotification([`Failed to update ${Capitalize(trimmedName)}.`]);
         });
     } else if (existingNumber) {
-      showNotification(
-        `${newNumber} is already added to the phonebook under a different name.`
-      );
+      showNotification([
+        `${newNumber} is already added to the phonebook under a different name.`,
+      ]);
       return;
     } else {
       numberService
@@ -221,14 +234,19 @@ const App = () => {
         .then((data) => {
           setPersons([...persons, data]);
           setMessageType(true);
-          showNotification(`${Capitalize(trimmedName)} has been added.`);
+          showNotification([`${Capitalize(trimmedName)} has been added.`]);
           setNewName("");
           setNewNumber("");
         })
         .catch((error) => {
           console.error(error);
           setMessageType(false);
-          showNotification(`Failed to add ${Capitalize(trimmedName)}.`);
+          const errorMessage = [
+            `Failed to add ${Capitalize(trimmedName)}.`,
+            error.response.data.error,
+            error.response.data.details,
+          ];
+          showNotification(errorMessage);
         });
     }
   };
@@ -240,12 +258,14 @@ const App = () => {
       .then(() => {
         setPersons(persons.filter((person) => person.id !== id));
         setMessageType(false);
-        showNotification(`${person.name} has been deleted.`);
+        showNotification([`${person.name} has been deleted.`]);
+        // Update the page to reflect the deletion
+        getHook();
       })
       .catch((error) => {
         console.log(error);
         setMessageType(false);
-        showNotification(`Failed to delete ${person.name}.`);
+        showNotification([`Failed to delete ${person.name}.`]);
       });
   };
 
