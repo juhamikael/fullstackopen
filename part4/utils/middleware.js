@@ -1,4 +1,7 @@
 const logger = require("./logger");
+const User = require("../models/user");
+const _ = require("lodash");
+const jwt = require("jsonwebtoken");
 
 const requestLogger = (request, response, next) => {
   logger.info("Method:", request.method);
@@ -19,13 +22,49 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: "malformatted id" });
   } else if (error.name === "ValidationError") {
     return response.status(400).json({ error: error.message });
+  } else if (error.name === "JsonWebTokenError") {
+    return response.status(400).json({ error: "token missing or invalid" });
+  } else if (error.name === "TokenExpiredError") {
+    return response.status(401).json({
+      error: "token expired",
+    });
   }
 
   next(error);
 };
 
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.startsWith("Bearer ")) {
+    const token = authorization.replace("Bearer ", "");
+    request.token = token;
+  }
+  next();
+};
+
+const userExtractor = async (request, response, next) => {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.startsWith("Bearer ")) {
+    const token = _.replace(authorization, "Bearer ", "");
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+
+    const user = await User.findById(decodedToken.id);
+    if (user) {
+      request.user = user;
+    } else {
+      return response.status(401).json({ error: "User not found" });
+    }
+  } else {
+    return response.status(401).json({ error: "Token missing or invalid" });
+  }
+
+  next();
+};
+
 module.exports = {
-  requestLogger,
-  unknownEndpoint,
   errorHandler,
+  requestLogger,
+  tokenExtractor,
+  userExtractor,
+  unknownEndpoint,
 };

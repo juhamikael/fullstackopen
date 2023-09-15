@@ -13,7 +13,6 @@ const favoriteBlog = (blogs) => {
   const favorite = blogs.reduce((previous, current) => {
     return previous.likes > current.likes ? previous : current;
   }, blogs[0]);
-
   return {
     title: favorite.title,
     author: favorite.author,

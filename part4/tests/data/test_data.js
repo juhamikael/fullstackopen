@@ -64,8 +64,8 @@ const multipleBlogs = [
     _id: "2a422bc61b54a654434d97fc",
     title: "Clean Code",
     author: "Robert C. Martin",
-    url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/CleanCode.html",
     likes: 12,
+    url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/CleanCode.html",
     __v: 0,
   },
 ];
