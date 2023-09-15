@@ -1,6 +1,3 @@
-const logger = require("../utils/logger");
-const lodash = require("lodash");
-
 const {
   authorWithMostBlogs,
   authorWithMostLikes,
@@ -56,22 +53,56 @@ describe("Favorite blog", () => {
     });
   });
 
+  test("when list has multiple blogs, equals the blog with most likes", () => {
+    const result = favoriteBlog(multipleBlogs);
 
-  test("of a bigger list is calculated right", () => {
-    const result = authorWithMostLikes(multipleBlogs);
-    expect(result).toEqual({
-      author: "Robert C. Martin",
-      likes: 24,
-    });
+    const isValid =
+      JSON.stringify(result) ===
+        JSON.stringify({
+          title: "Canonical string reduction",
+          author: "Edsger W. Dijkstra",
+          likes: 12,
+        }) ||
+      JSON.stringify(result) ===
+        JSON.stringify({
+          title: "Clean Code",
+          author: "Robert C. Martin",
+          likes: 12,
+        });
+
+    expect(isValid).toBe(true);
   });
 });
 
 describe("Author with most blogs", () => {
+  test("should return empty object if list is empty", () => {
+    const result = authorWithMostBlogs(emptyBlog);
+    expect(result).toEqual({});
+  });
+
+  test("should return author with most blogs when list has one blog", () => {
+    const result = authorWithMostBlogs(oneBlog);
+    expect(result).toEqual({
+      author: "Michael Chan",
+      blogs: 1,
+    });
+  });
+
   test("should return author with most blogs", () => {
     const result = authorWithMostBlogs(multipleBlogs);
     expect(result).toEqual({
       author: "Robert C. Martin",
       blogs: 4,
+    });
+  });
+});
+
+describe("Author with most likes", () => {
+  test("should return author with most likes", () => {
+    const result = authorWithMostLikes(multipleBlogs);
+    expect(result).toEqual({
+      author: "Robert C. Martin",
+      likes: 24,
     });
   });
 });
