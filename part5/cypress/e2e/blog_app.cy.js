@@ -20,6 +20,7 @@ describe("Note ", function () {
     cy.visit("http://localhost:5173");
     cy.contains("login").click();
   });
+
   it("front page can be opened and contains 'blogs'", function () {
     cy.contains("blogs");
   });
@@ -36,6 +37,7 @@ describe("Note ", function () {
       cy.get("#login-button").click();
       cy.contains("test logged in");
     });
+
     it("fails with wrong credentials", function () {
       cy.get("#username").type("test");
       cy.get("#password").type("wrong");
@@ -55,10 +57,12 @@ describe("Note ", function () {
       cy.get("#url").type("https://google.com");
       cy.get("#submit-blog-btn").click();
     });
+
     it("A blog can be created", function () {
       cy.contains("a new blog Test Title by Test Author added");
       cy.contains("Test Title Test Author");
     });
+
     it("A blog can be liked", function () {
       cy.get("#show-details-btn").click();
       cy.contains("Likes: 0");
@@ -76,11 +80,11 @@ describe("Note ", function () {
       cy.get("#title").type("Should be most liked");
       cy.get("#author").type("More Likes");
       cy.get("#url").type("https://google.com");
-    
+
       cy.get("#submit-blog-btn").click();
-    
-      cy.wait(1000); 
-    
+
+      cy.wait(1000);
+
       cy.get(".blog-item")
         .should("exist")
         .last()
@@ -89,9 +93,11 @@ describe("Note ", function () {
           cy.get(".like-btn").should("exist").click();
           cy.get(".show-details-btn").should("exist").click();
         });
-    
+
       // Verifying the ordering based on likes
-      cy.get(".blog-item").eq(0).should("contain", "Should be most liked More Likes");
+      cy.get(".blog-item")
+        .eq(0)
+        .should("contain", "Should be most liked More Likes");
       cy.get(".blog-item").eq(1).should("contain", "Test Title Test Author");
     });
   });
@@ -112,7 +118,7 @@ describe("Note ", function () {
       cy.get("#password").type("test2");
       cy.get("#login-button").click();
     });
-    it("A blog cannot be deleted", function () {
+    it("An existing blog cannot be deleted if logged in user hasn't created it", function () {
       cy.get("#show-details-btn").click();
       cy.get("#delete-btn").should("not.exist");
     });
