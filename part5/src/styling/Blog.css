@@ -1,0 +1,53 @@
+.blog-item {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  gap: 1rem;
+  background: lightgrey;
+}
+.blog-list {
+  padding-top: 1rem;
+}
+
+.show-details-btn {
+  width: 10%;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: none;
+}
+
+.show-details-btn:hover {
+  background: lightblue;
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
+}
+
+.like-btn {
+  width: 10%;
+  margin-left: 1rem;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: none;
+}
+
+.like-btn:hover {
+  background: lightblue;
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
+}
+
+.delete-btn {
+  width: 10%;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: none;
+  background: hsl(0, 85%, 64%);
+  color: white;
+}
+
+.delete-btn:hover {
+  background: hsl(0, 85%, 44%);
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
+}
