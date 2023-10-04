@@ -9,6 +9,9 @@
 | part3|:heavy_check_mark:|01.08.2023|
 | part4|:heavy_check_mark:|15.09.2023|
 | part5|:heavy_check_mark:|21.09.2023|
+| part6|:heavy_check_mark:|26.09.2023|
+| part7|:x:||
+
 
 ---
 
