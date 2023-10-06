@@ -1,10 +1,25 @@
 const mongoose = require("mongoose");
 
+const commentSchema = new mongoose.Schema({
+  content: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const blogSchema = new mongoose.Schema({
   title: String,
   author: String,
   url: String,
   likes: Number,
+  comments: {
+    type: [commentSchema],
+    default: [],
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

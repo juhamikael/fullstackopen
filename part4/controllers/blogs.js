@@ -11,6 +11,19 @@ blogRouter.get("/", async (request, response, next) => {
   response.json(blogs);
 });
 
+blogRouter.get("/:id", async (request, response, next) => {
+  const blog = await Blog.findById(request.params.id).populate("user", {
+    username: 1,
+    name: 1,
+    id: 1,
+  });
+  if (blog) {
+    response.json(blog);
+  } else {
+    response.status(404).end();
+  }
+});
+
 blogRouter.post(
   "/",
   middleware.userExtractor,
@@ -46,6 +59,31 @@ blogRouter.post(
     response.status(201).json(savedBlog);
   }
 );
+
+blogRouter.post("/:id/comments", async (request, response, next) => {
+  const { comment } = request.body;
+
+  if (!comment || typeof comment !== "string") {
+    return response
+      .status(400)
+      .send({ error: "Comment is required and should be a string" });
+  }
+
+  try {
+    const blog = await Blog.findById(request.params.id);
+    if (!blog) {
+      return response.status(404).send({ error: "Blog not found" });
+    }
+
+    const newComment = { content: comment, createdAt: new Date() };
+    blog.comments.push(newComment);
+    await blog.save();
+    response.status(201).json(blog);
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 blogRouter.delete(
   "/:id",
