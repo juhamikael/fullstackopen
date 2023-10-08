@@ -1,7 +1,7 @@
-import { parseArguments } from "./utils";
+import { parseArguments, isCLI } from "./utils";
 type Result = { bmi: number, message: string };
 
-const calculateBmi = (height: number, weight: number): Result => {
+export const calculateBmi = (height: number, weight: number): Result => {
     const bmi = Number((weight / Math.pow(height / 100, 2)).toFixed(3));
     switch (true) {
         case (bmi < 15):
@@ -19,8 +19,11 @@ const calculateBmi = (height: number, weight: number): Result => {
         default:
             return { bmi: bmi, message: "Unknown" };
     }
+};
+
+if (isCLI) {
+    const { height, weight } = parseArguments(process.argv) as { height: number, weight: number };
+    const bmi = calculateBmi(height, weight);
+    console.log(bmi);
 }
 
-const { height, weight } = parseArguments(process.argv) as { height: number, weight: number };
-const bmi = calculateBmi(height, weight);
-console.log(bmi);

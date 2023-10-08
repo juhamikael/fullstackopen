@@ -1,10 +1,21 @@
 type TParsedArgumentsResult = { height: number, weight: number } | { dailyExerciseHours: Array<number>, target: number } | { error: string };
 
-export const isNotNumber = (argument: any): boolean =>
+export const isNotNumber = (argument: unknown): boolean =>
     isNaN(Number(argument));
 
+export const isCLI = process.argv.length >= 2 && ["bmiCalculator", "exerciseCalculator"].includes(process.argv[1]);
+
 export const parseArguments = (args: Array<string>): TParsedArgumentsResult => {
-    const fileName = args[1].split("\\").pop().split("/").pop().split(".")[0]
+
+    if (args.length < 2) throw new Error('Not enough arguments');
+    if (args.length > 2) throw new Error('Too many arguments');
+
+    const fileName = args[1]?.split("\\")?.pop()?.split("/")?.pop()?.split(".")?.[0];
+
+    if (!fileName) {
+        throw new Error("Filename is not provided or could not be parsed.");
+    }
+
     let message = '';
     switch (fileName) {
         case "bmiCalculator":
@@ -36,7 +47,6 @@ export const parseArguments = (args: Array<string>): TParsedArgumentsResult => {
                 if (isNotNumber(hour)) throw new Error(`Exercise hours for day ${i - 3} must be a number, \n${message}`);
                 dailyExerciseHours.push(hour);
             }
-
             return {
                 dailyExerciseHours,
                 target,

@@ -1,4 +1,4 @@
-import { parseArguments } from "./utils"
+import { isCLI, parseArguments } from "./utils";
 
 interface IResult {
     periodLength: number,
@@ -15,7 +15,7 @@ interface IRating {
     ratingDescription: string
 }
 
-const calculateExercises = (dailyExerciseHours: Array<number>, target: number): IResult => {
+export const calculateExercises = (dailyExerciseHours: Array<number>, target: number): IResult => {
 
     const average = dailyExerciseHours.reduce((sum: number, hours: number) => sum + hours
         , 0) / dailyExerciseHours.length;
@@ -40,7 +40,7 @@ const calculateExercises = (dailyExerciseHours: Array<number>, target: number): 
         return {
             rating: rating,
             ratingDescription: ratingDescription
-        }
+        };
     };
     return {
         periodLength: dailyExerciseHours.length,
@@ -50,12 +50,14 @@ const calculateExercises = (dailyExerciseHours: Array<number>, target: number): 
         rating: rating(average, target).rating,
         ratingDescription: rating(average, target).ratingDescription,
         target: target
-    }
+    };
+};
+
+
+if (isCLI) {
+    const { dailyExerciseHours, target } = parseArguments(process.argv) as { dailyExerciseHours: Array<number>, target: number };
+    const userExercises = calculateExercises(dailyExerciseHours, target);
+    console.log(userExercises);
 }
 
 
-
-const { dailyExerciseHours, target } = parseArguments(process.argv) as { dailyExerciseHours: Array<number>, target: number };
-
-const userExercises = calculateExercises(dailyExerciseHours, target);
-console.log(userExercises);
