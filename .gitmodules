@@ -1,3 +1,6 @@
 [submodule "part7/fullstackopen-bloglist"]
 	path = part7/fullstackopen-bloglist
 	url = https://github.com/juhamikael/fullstackopen-bloglist
+[submodule "part9/patientor"]
+	path = part9/patientor
+	url = https://github.com/juhamikael/fullstackopen-patientor
