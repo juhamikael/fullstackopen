@@ -10,6 +10,10 @@ router.get('/', (_req, res) => {
   res.send(diaryService.getNonSensitiveEntries());
 });
 
+router.get('/all', (_req, res) => {
+  res.send(diaryService.getEntries());
+});
+
 router.get('/:id', (req, res) => {
   const diary = diaryService.findById(Number(req.params.id));
 
