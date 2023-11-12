@@ -12,7 +12,7 @@
 | part6|Advanced state management|:heavy_check_mark:|26.09.2023|
 | part7|React router, custom hooks, styling app with CSS and webpack|:heavy_check_mark:|08.10.2023|
 | part8|GraphQL|:x:||
-| part9|TypeScript|:x:||
+| part9|TypeScript|:heavy_check_mark:|13.11.2023|
 | part10|React Native|:x:||
 | part11|CI/CD|:x:||
 | part12|Containers|:x:||
