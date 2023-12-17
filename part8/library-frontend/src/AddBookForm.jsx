@@ -50,6 +50,7 @@ const AddBookForm = ({ setError, setPage }) => {
   const submit = async (event) => {
     event.preventDefault();
     const genresSplitted = splitGenres(genres).filter((genre) => genre);
+    
     const publishedNumber = parseInt(published) || 1;
 
     try {
