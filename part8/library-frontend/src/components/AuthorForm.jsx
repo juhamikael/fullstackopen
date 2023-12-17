@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { ALL_AUTHORS, EDIT_AUTHOR } from "./queries";
-import { buttonclass } from "./styles";
-import { cn } from "./lib";
+import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries";
+import { buttonclass } from "../styles";
+import { cn } from "../lib";
 const AuthorForm = ({ authors, setError }) => {
   const [name, setName] = useState("");
   const [born, setBorn] = useState(0);
