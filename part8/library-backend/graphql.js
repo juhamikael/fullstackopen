@@ -115,6 +115,7 @@ const typeDefs = `
       authorCount: Int!
       allBooks(author: String, genre:String): [Book!]!
       allAuthors: [Author!]!
+      allGenres: [String!]!
       me: User
     }
     type User {
@@ -155,7 +156,20 @@ const resolvers = {
   Query: {
     bookCount: async () => await Books.collection.countDocuments(),
     authorCount: async () => await Authors.collection.countDocuments(),
-    allBooks: async () => await Books.find({}),
+    allBooks: async (root, args) => {
+      if (args.genre) {
+        console.log("args.genre", args.genre);
+        return await Books.find({ genres: { $in: [args.genre] } });
+      }
+      return await Books.find({});
+    },
+    allGenres: async () => {
+      const books = await Books.find({});
+      const genres = books.map((book) => book.genres);
+      const flattenedGenres = genres.flat();
+      const uniqueGenres = [...new Set(flattenedGenres)];
+      return uniqueGenres;
+    },
     allAuthors: async () => await Authors.find({}),
     me: (root, args, context) => {
       return context.currentUser;
@@ -211,7 +225,7 @@ const resolvers = {
         }
 
         const savedUser = await user.save();
-        return savedUser; 
+        return savedUser;
       } catch (error) {
         console.error("Error creating user:", error);
         throw new GraphQLError("Creating the user failed", {
@@ -252,7 +266,7 @@ const resolvers = {
       }
 
       if (args.title.length < 3) {
-        throw new GraphQLError("Title must be at least 5 characters long", {
+        throw new GraphQLError("Title must be at least 3 characters long", {
           code: "BAD_USER_INPUT",
           invalidArgs: Object.keys(args),
         });

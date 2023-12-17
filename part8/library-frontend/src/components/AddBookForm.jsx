@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   ALL_BOOKS,
   ADD_BOOK,
   ADD_AUTHOR,
   ALL_AUTHORS,
   EDIT_AUTHOR,
-} from "./queries";
-import { formClass, buttonclass, formItemsClass, labelClass } from "./styles";
-import { cn } from "./lib";
+} from "../queries";
+import { formClass, buttonclass, formItemsClass, labelClass } from "../styles";
+import { cn } from "../lib";
+import { selectedGenre } from "../../signals";
 const AddBookForm = ({ setError, setPage }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -30,7 +31,10 @@ const AddBookForm = ({ setError, setPage }) => {
       const message = error.graphQLErrors.map((e) => e.message).join("\n");
       setError(message);
     },
-    refetchQueries: [{ query: ALL_BOOKS }],
+    refetchQueries: [
+      { query: ALL_BOOKS, variables: { genre: selectedGenre.value } },
+      "allBooks",
+    ],
   });
 
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
@@ -43,14 +47,13 @@ const AddBookForm = ({ setError, setPage }) => {
 
   const splitGenres = (genres) => {
     if (!genres) return [];
-    if (!genres.includes(",")) return [genres];
-    return genres.split(",").map((genre) => genre.trim());
+    return genres.split(",").map((genre) => genre.trim().toLowerCase());
   };
 
   const submit = async (event) => {
     event.preventDefault();
     const genresSplitted = splitGenres(genres).filter((genre) => genre);
-    
+
     const publishedNumber = parseInt(published) || 1;
 
     try {
@@ -80,7 +83,7 @@ const AddBookForm = ({ setError, setPage }) => {
       await addBook({
         variables: {
           title,
-          author: authorId, 
+          author: authorId,
           published: publishedNumber,
           genres: genresSplitted,
         },
