@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { ALL_BOOKS, ADD_BOOK, ADD_AUTHOR, ALL_AUTHORS } from "./queries";
+import {
+  ALL_BOOKS,
+  ADD_BOOK,
+  ADD_AUTHOR,
+  ALL_AUTHORS,
+  EDIT_AUTHOR,
+} from "./queries";
 import { formClass, buttonclass, formItemsClass, labelClass } from "./styles";
 import { cn } from "./lib";
 const AddBookForm = ({ setError, setPage }) => {
@@ -13,6 +19,7 @@ const AddBookForm = ({ setError, setPage }) => {
   const [addAuthor] = useMutation(ADD_AUTHOR, {
     onError: (error) => {
       const message = error.graphQLErrors.map((e) => e.message).join("\n");
+      console.log(message);
       setError(message);
     },
     refetchQueries: [{ query: ALL_AUTHORS }],
@@ -26,6 +33,14 @@ const AddBookForm = ({ setError, setPage }) => {
     refetchQueries: [{ query: ALL_BOOKS }],
   });
 
+  const [editAuthor] = useMutation(EDIT_AUTHOR, {
+    onError: (error) => {
+      const message = error.graphQLErrors.map((e) => e.message).join("\n");
+      setError(message);
+    },
+    refetchQueries: [{ query: ALL_AUTHORS }],
+  });
+
   const splitGenres = (genres) => {
     if (!genres) return [];
     if (!genres.includes(",")) return [genres];
@@ -35,33 +50,40 @@ const AddBookForm = ({ setError, setPage }) => {
   const submit = async (event) => {
     event.preventDefault();
     const genresSplitted = splitGenres(genres).filter((genre) => genre);
-    const publishedNumber = parseInt(published) || 0;
+    const publishedNumber = parseInt(published) || 1;
+
     try {
+      let authorId;
+      const existingAuthor = authors.data.allAuthors.find(
+        (a) => a.name === author
+      );
+
+      if (!existingAuthor) {
+        const response = await addAuthor({
+          variables: {
+            name: author,
+            bookCount: 1,
+          },
+        });
+        authorId = response.data.addAuthor.id;
+      } else {
+        authorId = existingAuthor.id;
+        await editAuthor({
+          variables: {
+            name: author,
+            bookCount: existingAuthor.bookCount + 1,
+          },
+        });
+      }
+
       await addBook({
         variables: {
           title,
-          author,
+          author: authorId, 
           published: publishedNumber,
           genres: genresSplitted,
         },
       });
-
-      if (!authors.data.allAuthors.find((a) => a.name === author)) {
-        await addAuthor({
-          variables: { name: author, bookCount: 1 },
-        });
-      }
-
-      if (authors.data.allAuthors.find((a) => a.name === author)) {
-        await addAuthor({
-          variables: {
-            name: author,
-            bookCount:
-              authors.data.allAuthors.find((a) => a.name === author).bookCount +
-              1,
-          },
-        });
-      }
 
       setTitle("");
       setPublished(null);
@@ -137,7 +159,7 @@ const AddBookForm = ({ setError, setPage }) => {
         </div>
         <button
           className={cn(
-            !title || !author || !published || !genres 
+            !title || !author || !published || !genres
               ? `${buttonclass} bg-gray-400 hover:bg-gray-400/80`
               : buttonclass
           )}
@@ -150,5 +172,5 @@ const AddBookForm = ({ setError, setPage }) => {
     </div>
   );
 };
- 
+
 export default AddBookForm;

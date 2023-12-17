@@ -62,7 +62,6 @@ const Books = ({ books }) => {
 
     return genres.join(", ");
   };
-
   return (
     <div className="w-2/3 ">
       <div className="text-center text-2xl py-4 font-black">Authors</div>
@@ -79,7 +78,7 @@ const Books = ({ books }) => {
           {books.map((book) => (
             <tr key={book.id} className="border-b border-white/20 h-16">
               <td className="text-start ">{book.title}</td>
-              <td className="text-start">{book.author}</td>
+              <td className="text-start">{book.author.name}</td>
               <td className="text-start ">{book.published}</td>
               <td className="text-start ">{genreParser(book.genres)}</td>
             </tr>
@@ -96,7 +95,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [page, setPage] = useState("authors");
   const buttonStyle = "border px-4 rounded-md  ";
-
+  console.log("books", books);
   const notify = (message) => {
     setErrorMessage(message);
     setTimeout(() => {
