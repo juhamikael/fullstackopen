@@ -1,0 +1,9 @@
+╭─juha@JMS ~
+╰─$ cat typescript                                                                                                                                                                    130 ↵
+Script started on 2023-12-18 01:11:05+02:00 [TERM="xterm-256color" TTY="/dev/pts/7" COLUMNS="188" LINES="49"]
+╭─juha@JMS ~
+╰─$ docker container run -it ubuntu bash
+root@739658fcd855:/# mkdir /usr/src/app
+root@739658fcd855:/# touch /usr/src/app/index.js
+root@739658fcd855:/# exit
+exit

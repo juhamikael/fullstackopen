@@ -1,0 +1,11 @@
+╭─juha@JMS ~
+╰─$ docker start -i infallible_joliot
+root@5a08fb518287:/# nano /usr/src/app/index.js
+root@5a08fb518287:/# cat /usr/src/app/index.js
+console.log('Hello World');
+root@5a08fb518287:/# exit
+exit
+╭─juha@JMS ~
+╰─$ exit
+
+Script done on 2023-12-30 20:15:56+02:00 [COMMAND_EXIT_CODE="0"]
