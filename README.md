@@ -11,7 +11,7 @@
 | part5|Testing React apps|:heavy_check_mark:|21.09.2023|
 | part6|Advanced state management|:heavy_check_mark:|26.09.2023|
 | part7|React router, custom hooks, styling app with CSS and webpack|:heavy_check_mark:|08.10.2023|
-| part8|GraphQL|:x:||
+| part8|GraphQL|:heavy_check_mark:|18.12.2023|
 | part9|TypeScript|:heavy_check_mark:|13.11.2023|
 | part10|React Native|:x:||
 | part11|CI/CD|:x:||
