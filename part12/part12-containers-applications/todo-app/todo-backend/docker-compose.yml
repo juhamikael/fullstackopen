@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # Created .env file in the root directory next to docker-compose.yml file
+      # and added MONGO_URL and REDIS_URL variables which we can use here as follows:
+      - MONGO_URL=${MONGO_URL}    
+      - REDIS_URL=${REDIS_URL}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
