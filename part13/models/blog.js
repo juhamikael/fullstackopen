@@ -1,6 +1,7 @@
 // /models/blog.js
-const { Model, DataTypes } = require("sequelize");
-const sequelize = require("../config")
+const { Model, DataTypes,Sequelize } = require("sequelize");
+require("dotenv").config({ path: ".env" });
+const sequelize = new Sequelize(process.env.DATABASE_URL);
 
 class Blog extends Model {}
 Blog.init(
@@ -18,6 +19,10 @@ Blog.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    url: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
     likes: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -30,5 +35,7 @@ Blog.init(
     modelName: "blog",
   }
 );
+
+Blog.sync();
 
 module.exports = Blog;
