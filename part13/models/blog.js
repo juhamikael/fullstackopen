@@ -1,5 +1,4 @@
-// /models/blog.js
-require("dotenv").config({ path: ".env" });
+// ./models/blog.js
 const { sequelize } = require("../util/db");
 const { Model, DataTypes } = require("sequelize");
 
@@ -32,7 +31,7 @@ Blog.init(
   {
     sequelize,
     underscored: true,
-    timestamps: false,
+    timestamps: true,
     modelName: "blog",
   }
 );
