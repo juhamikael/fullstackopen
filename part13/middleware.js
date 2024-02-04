@@ -1,7 +1,7 @@
 // middleware.js
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message);
+  console.error(error.message, error.stack);
 
   if (error.name === "SequelizeValidationError") {
     const errors = error.errors.map(err => err.message);

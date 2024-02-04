@@ -2,8 +2,9 @@
 const bcrypt = require("bcrypt");
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user");
-const Blog = require("../models/blog");
+const { User, Blog, Readings, Session } = require("../models/index");
+
+const { tokenExtractor, sessionChecker } = require("../util/middleware");
 
 const userFinder = async (req, res, next) => {
   console.log(`Looking for user with ID: ${req.params.id}`);
@@ -16,16 +17,26 @@ const userFinder = async (req, res, next) => {
   next();
 };
 
+const isAdmin = async (req, res, next) => {
+  const user = await User.findByPk(req.decodedToken.id);
+  if (!user.admin) {
+    return res.status(401).json({ error: "operation not permitted" });
+  }
+  next();
+};
+
 /**
  * GET /api/users
  */
 router.get("/", async (req, res, next) => {
   try {
     const users = await User.findAll({
-      include: {
-        model: Blog,
-        attributes: ["id", "title", "author", "userId"],
-      },
+      include: [
+        {
+          model: Blog,
+          attributes: ["id", "title", "author"],
+        },
+      ],
       attributes: { exclude: ["password", "email", "username"] },
     });
 
@@ -36,21 +47,76 @@ router.get("/", async (req, res, next) => {
 });
 
 router.get("/:id", async (req, res, next) => {
-  const user = await User.findByPk(req.params.id, {
-    include: {
-      model: Blog,
-      attributes: ["id", "title", "author", "userId"],
-    },
-    attributes: { exclude: ["password", "email", "username"] },
-  });
+  try {
+    const userId = parseInt(req.params.id, 10);
+    const whereRead = {};
 
-  if (!user) {
-    const error = new Error("User not found");
-    error.name = "NotFoundError";
-    throw error;
+    if (req.query.read !== undefined) {
+      whereRead.read = req.query.read === "true";
+    }
+
+    const findUser = await User.findByPk(userId);
+
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Blog,
+          as: "blogs",
+          attributes: ["id", "title", "author", "userId"],
+        },
+        {
+          model: Readings,
+          as: "readings",
+          where: req.query.read !== undefined ? whereRead : undefined,
+          include: [
+            {
+              model: Blog,
+              as: "blog",
+              attributes: ["id", "url", "title", "author", "year", "likes"],
+            },
+          ],
+        },
+      ],
+      attributes: ["id", "name", "username"],
+    });
+
+    if (!user && whereRead.read === true && findUser) {
+      return res
+        .status(404)
+        .json({ error: "User does not have any finished readings in list" });
+    } else if (!user && whereRead.read === false && findUser) {
+      return res
+        .status(404)
+        .json({ error: "User does not have any unfinished readings in list" });
+    } else if (!user && !findUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const reformatted = {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      readings: user.readings
+        ? user.readings.map((reading) => {
+            return {
+              id: reading.id,
+              read: reading.read,
+              blog: reading.blog,
+              url: reading.url,
+              title: reading.title,
+              author: reading.author,
+              year: reading.year,
+              likes: reading.likes,
+              read: reading.read,
+            };
+          })
+        : [],
+    };
+
+    return res.json(reformatted);
+  } catch (error) {
+    next(error);
   }
-
-  return res.json(user);
 });
 
 /**
@@ -58,7 +124,6 @@ router.get("/:id", async (req, res, next) => {
  * Used implementation from my own implementation from part 4
  */
 router.post("/", async (request, response, next) => {
-  console.log(request.body);
   try {
     const { username, name, password, email } = request.body;
     const saltRounds = 10;
@@ -97,35 +162,65 @@ router.delete("/:id", userFinder, async (req, res, next) => {
 /*
  * PUT /api/users/:username
  */
-router.put("/:username", async (req, res, next) => {
-  try {
-    const currentUsername = req.params.username;
+router.put(
+  "/:username",
+  tokenExtractor,
+  isAdmin,
+  sessionChecker,
+  async (req, res, next) => {
+    try {
+      const currentUsername = req.params.username;
 
-    const user = await User.findOne({ where: { username: currentUsername } });
-    if (!user) {
-      const error = new Error("User not found");
-      error.name = "NotFoundError";
-      throw error;
-    }
-    const { username: newUserName } = req.body;
-    if (newUserName !== currentUsername) {
-      const existingUser = await User.findOne({
-        where: {
-          username: newUserName,
-        },
-      });
-      if (existingUser) {
-        return res.status(400).json({
-          error: `Username '${newUserName}' already exists.`,
+      const user = await User.findOne({ where: { username: currentUsername } });
+      if (!user) {
+        const error = new Error("User not found");
+        error.name = "NotFoundError";
+        throw error;
+      }
+
+      if (req.body.disabled !== undefined) {
+        user.disabled = req.body.disabled;
+        if (req.body.disabled) {
+          await Session.destroy({
+            where: {
+              userId: user.id,
+            },
+          });
+        }
+
+        await user.save();
+        return res.json(user);
+      }
+
+      const { username: newUserName } = req.body;
+      if (newUserName && newUserName !== currentUsername) {
+        const existingUser = await User.findOne({
+          where: {
+            username: newUserName,
+          },
+        });
+
+        if (existingUser) {
+          return res.status(400).json({
+            error: `Username '${newUserName}' already exists.`,
+          });
+        }
+
+        await user.update({ username: newUserName });
+        return res.json({
+          message: "User updated successfully",
+          oldUsername: currentUsername,
+          newUsername: newUserName,
         });
       }
-    }
 
-    const updatedUser = await user.update({ username: newUserName });
-    return res.json(updatedUser);
-  } catch (error) {
-    next(error);
+      res.json({
+        message: "No updates performed.",
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 module.exports = router;

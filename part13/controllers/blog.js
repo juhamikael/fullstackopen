@@ -2,32 +2,11 @@
 const { Op } = require("sequelize");
 const express = require("express");
 const router = express.Router();
-const Blog = require("../models/blog");
-const User = require("../models/user");
-
-const jwt = require("jsonwebtoken");
-const { SECRET } = require("../util/config");
+const { User, Blog } = require("../models/index");
+const { tokenExtractor, sessionChecker } = require("../util/middleware");
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
-  next();
-};
-
-const tokenExtractor = (req, res, next) => {
-  const authorization = req.get("authorization");
-  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
-    try {
-      console.log(authorization.substring(7));
-      console.log(SECRET);
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
-    } catch (error) {
-      console.log(error);
-      return res.status(401).json({ error: "token invalid" });
-    }
-  } else {
-    return res.status(401).json({ error: "token missing" });
-  }
-
   next();
 };
 
@@ -73,7 +52,7 @@ router.get("/:id", blogFinder, async (req, res, next) => {
 /**
  * POST /api/blogs
  */
-router.post("/", tokenExtractor, async (req, res, next) => {
+router.post("/", tokenExtractor, sessionChecker, async (req, res, next) => {
   try {
     const user = await User.findByPk(req.decodedToken.id);
     const blog = await Blog.create({
@@ -87,49 +66,91 @@ router.post("/", tokenExtractor, async (req, res, next) => {
   }
 });
 
-/**
- * DELETE /api/blogs
- */
-router.delete("/:id", tokenExtractor, async (req, res, next) => {
+router.post("/bulk", tokenExtractor, sessionChecker, async (req, res, next) => {
+  if (!Array.isArray(req.body)) {
+    return res.status(400).json({ error: "Expected an array of blog posts" });
+  }
   try {
-    const blog = await Blog.findByPk(req.params.id);
+    const blogPosts = req.body.map((post) => ({
+      ...post,
+      userId: req.decodedToken.id,
+      date: new Date(),
+    }));
 
-    if (blog.userId !== req.decodedToken.id) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    if (!blog) {
-      return res.status(404).json({ error: "Blog not found" });
-    }
-
-    await blog.destroy();
-
-    return res.status(204).end();
+    const createdPosts = await Blog.bulkCreate(blogPosts, { returning: true });
+    return res.status(201).json(createdPosts);
   } catch (error) {
     next(error);
   }
 });
+
+/**
+ * DELETE /api/blogs
+ */
+router.delete(
+  "/:id",
+  tokenExtractor,
+  sessionChecker,
+  async (req, res, next) => {
+    try {
+      const blog = await Blog.findByPk(req.params.id);
+
+      if (!blog) {
+        return res.status(404).json({ error: "Blog not found" });
+      }
+
+      if (blog.userId !== req.decodedToken.id) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      await blog.destroy();
+
+      return res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 /**
  * PUT /api/blogs
  */
-router.put("/:id", blogFinder, async (req, res, next) => {
-  try {
-    if (!req.blog) {
-      const error = new Error("Blog not found");
-      error.name = "NotFoundError";
-      throw error;
-    }
-    const { likes } = req.body;
-    if (likes !== undefined) {
-      const updatedBlog = await req.blog.update({ likes });
+router.put(
+  "/:id",
+  tokenExtractor,
+  sessionChecker,
+  blogFinder,
+  async (req, res, next) => {
+    try {
+      if (!req.blog) {
+        const error = new Error("Blog not found");
+        error.name = "NotFoundError";
+        throw error;
+      }
+
+      const updateData = {};
+      const { likes, year } = req.body;
+
+      if (likes !== undefined) {
+        updateData.likes = likes;
+      }
+
+      if (year !== undefined) {
+        updateData.year = year;
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        return res
+          .status(400)
+          .json({ error: "Likes or year value is required" });
+      }
+
+      const updatedBlog = await req.blog.update(updateData);
       return res.json(updatedBlog);
-    } else {
-      return res.status(400).json({ error: "Likes value is required" });
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 module.exports = router;
