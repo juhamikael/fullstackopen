@@ -16,7 +16,7 @@
 | part10|React Native|:x:||
 | part11|CI/CD|:x:||
 | part12|Containers|:x:||
-| part13|Using relational databases|:x:||
+| part13|Using relational databases|:heavy_check_mark:|04.02.2024|
 ---
 
 #### FI: https://fullstackopen.com/  
