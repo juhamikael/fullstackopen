@@ -1,7 +1,8 @@
+// controllers/authors.js
 const { fn, col, literal } = require("sequelize");
 const express = require("express");
 const router = express.Router();
-const Blog = require("../models/blog");
+const { Blog } = require("../models/index");
 
 router.get("/", async (req, res, next) => {
   try {

@@ -1,23 +1,24 @@
+// models/index.js
 const Blog = require("./blog");
 const User = require("./user");
+const Readings = require("./readings");
+const Session = require("./session");
 
-const setupDatabase = async () => {
-  try {
-    console.log("Starting synchronization...");
-    User.hasMany(Blog);
-    Blog.belongsTo(User);
-    await Blog.sync({ alter: true });
-    console.log("Blog model synchronized successfully.");
-    await User.sync({ alter: true });
-    console.log("User model synchronized successfully.");
-  } catch (error) {
-    console.error("Error synchronizing models:", error);
-    throw error;
-  }
-};
+User.hasMany(Blog, { foreignKey: "userId" });
+Blog.belongsTo(User, { foreignKey: "userId" });
+
+User.hasMany(Readings, { foreignKey: "userId" });
+Readings.belongsTo(User, { foreignKey: "userId" });
+
+Blog.hasMany(Readings, { foreignKey: "blogId" });
+Readings.belongsTo(Blog, { foreignKey: "blogId" });
+
+User.hasOne(Session, { foreignKey: "userId" });
+Session.belongsTo(User, { foreignKey: "userId" });
 
 module.exports = {
   Blog,
   User,
-  setupDatabase,
+  Readings,
+  Session,
 };
