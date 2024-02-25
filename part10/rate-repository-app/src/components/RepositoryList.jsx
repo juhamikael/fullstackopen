@@ -1,11 +1,6 @@
-import { FlatList, View, StyleSheet, Text, Image } from "react-native";
-
-const styles = StyleSheet.create({
-  separator: {
-    borderBottomWidth: 1,
-    marginVertical: 20
-},
-});
+//src/components/RepositoryList.jsx
+import { FlatList, View, StyleSheet } from "react-native";
+import RepositoryItem from "./RepositoryItem";
 
 const repositories = [
   {
@@ -52,27 +47,39 @@ const repositories = [
     reviewCount: 0,
     ownerAvatarUrl: "https://avatars3.githubusercontent.com/u/13142323?v=4",
   },
+  {
+    id: "tailwindlabs.tailwindcss",
+    fullName: "tailwindlabs/tailwindcss",
+    description: "A utility-first CSS framework for rapid UI development.",
+    language: "JavaScript",
+    forksCount: 4039,
+    stargazersCount: 76300,
+    ratingAverage: 0,
+    reviewCount: 0,
+    ownerAvatarUrl: "https://avatars.githubusercontent.com/u/67109815?s=48&v=4",
+  },
+  {
+    id: "tiangolo.fastapi",
+    fullName: "tiangolo/fastapi",
+    description: "FastAPI framework, high performance, easy to learn, fast to code, ready for production",
+    language: "Python",
+    forksCount: 5803,
+    stargazersCount: 68381,
+    ratingAverage: 0,
+    reviewCount: 0,
+    ownerAvatarUrl: "https://avatars.githubusercontent.com/u/1326112?s=48&v=4",
+  },
 ];
+
+const styles = StyleSheet.create({
+  separator: {
+    marginVertical: 5,
+  },
+});
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
-const SingleRepository = ({ repository }) => {
-  return (
-    <View>
-      <Text>{repository.fullName}</Text>
-      <Text>{repository.description}</Text>
-      <Text>{repository.language}</Text>
-      <Text>{repository.forksCount}</Text>
-      <Text>{repository.stargazersCount}</Text>
-      <Text>{repository.ratingAverage}</Text>
-      <Text>{repository.reviewCount}</Text>
-      <Image
-        style={{ width: 50, height: 50 }}
-        source={{ uri: repository.ownerAvatarUrl }}
-      />
-    </View>
-  );
-};
+
 
 const RepositoryList = () => {
   return (
@@ -80,9 +87,8 @@ const RepositoryList = () => {
       data={repositories}
       ItemSeparatorComponent={ItemSeparator}
       renderItem={({ item }) => {
-        return <SingleRepository repository={item} />;
+        return <RepositoryItem repository={item} />;
       }}
-      // other props
     />
   );
 };
