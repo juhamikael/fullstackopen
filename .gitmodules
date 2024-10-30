@@ -7,3 +7,6 @@
 [submodule "part11/full-stack-open-pokedex"]
 	path = part11/full-stack-open-pokedex
 	url = https://github.com/juhamikael/full-stack-open-pokedex.git
+[submodule "part11/fullstackopen-pokedex"]
+	path = part11/fullstackopen-pokedex
+	url = https://github.com/juhamikael/fullstackopen-pokedex
