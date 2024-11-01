@@ -11,8 +11,6 @@
     "react-native/react-native": true
   },
   "rules": {
-    "quotes": ["error", "double"],
-    "semi": ["error", "always"],
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off"
   }
