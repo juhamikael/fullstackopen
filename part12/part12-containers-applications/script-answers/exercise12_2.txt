@@ -1,9 +1,15 @@
-╭─juha@JMS ~
-╰─$ cat typescript                                                                                                                                                                    130 ↵
-Script started on 2023-12-18 01:11:05+02:00 [TERM="xterm-256color" TTY="/dev/pts/7" COLUMNS="188" LINES="49"]
-╭─juha@JMS ~
-╰─$ docker container run -it ubuntu bash
-root@739658fcd855:/# mkdir /usr/src/app
-root@739658fcd855:/# touch /usr/src/app/index.js
-root@739658fcd855:/# exit
-exit
+Script started on 2025-02-09 21:42:25+02:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="120" LINES="31"]
+[?2004h]0;juha@Savik: ~[01;32mjuha@Savik[00m:[01;34m~[00m$ [7mdocker run -it ubuntu /bin/bash[27m[C[C[C[C[C[C[C[C[C[C[C[C[C[Cdocker run -it ubuntu /bin/bash
+[?2004l[?2004h]0;root@66b7a695419c: /root@66b7a695419c:/# [7mmkdir -p /usr/src/app[27mmkdir -p /usr/src/app
+[?2004l[?2004h]0;root@66b7a695419c: /root@66b7a695419c:/# cd 
+.dockerenv  dev/        lib/        mnt/        root/       srv/        usr/        
+bin/        etc/        lib64/      opt/        run/        sys/        var/        
+boot/       home/       media/      proc/       sbin/       tmp/        
+]0;root@66b7a695419c: /root@66b7a695419c:/# cd usr/sc rc/app/
+[?2004l[?2004h]0;root@66b7a695419c: /usr/src/approot@66b7a695419c:/usr/src/app# touch ide  ndex.js
+[?2004l[?2004h]0;root@66b7a695419c: /usr/src/approot@66b7a695419c:/usr/src/app# exit
+[?2004lexit
+[?2004h]0;juha@Savik: ~[01;32mjuha@Savik[00m:[01;34m~[00m$ exit
+[?2004lexit
+
+Script done on 2025-02-09 21:43:22+02:00 [COMMAND_EXIT_CODE="0"]
