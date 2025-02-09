@@ -1,0 +1,92 @@
+juha@Savik:~$ script exercise12_11.txt
+Script started, output log file is 'exercise12_11.txt'.
+juha@Savik:~$ docker exec -it todo-backend-redis-1 bash
+root@3aa8a909dab6:/data# redis-cli
+127.0.0.1:6379> KEYS *
+1) "added_todos"
+127.0.0.1:6379> SET added_todos 9001
+OK
+127.0.0.1:6379> GET added_todos
+"9001"
+127.0.0.1:6379> exit
+root@3aa8a909dab6:/data# exit
+exit
+juha@Savik:~$ docker container ls
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS                                           NAMES
+3aa8a909dab6   redis     "docker-entrypoint.s…"   27 minutes ago   Up 27 minutes   0.0.0.0:6379->6379/tcp, :::6379->6379/tcp       todo-backend-redis-1
+efa76d7eb35a   mongo     "docker-entrypoint.s…"   27 minutes ago   Up 27 minutes   0.0.0.0:3456->27017/tcp, [::]:3456->27017/tcp   todo-backend-mongo-1
+juha@Savik:~$ docker exec -it todo-backend-mongo-1 bash
+root@efa76d7eb35a:/# mongosh -u root -p example
+Current Mongosh Log ID: 67a940b76fce04d421544ca6
+Connecting to:          mongodb://<credentials>@127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.3.8
+Using MongoDB:          8.0.4
+Using Mongosh:          2.3.8
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+
+To help improve our products, anonymous usage data is collected and sent to MongoDB periodically (https://www.mongodb.com/legal/privacy-policy).
+You can opt-out by running the disableTelemetry() command.
+
+------
+   The server generated these startup warnings when booting
+   2025-02-09T23:28:52.458+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2025-02-09T23:28:52.735+00:00: For customers running the current memory allocator, we suggest changing the contents of the following sysfsFile
+   2025-02-09T23:28:52.735+00:00: We suggest setting the contents of sysfsFile to 0.
+   2025-02-09T23:28:52.735+00:00: Your system has glibc support for rseq built in, which is not yet supported by tcmalloc-google and has critical performance implications. Please set the environment variable GLIBC_TUNABLES=glibc.pthread.rseq=0
+   2025-02-09T23:28:52.735+00:00: vm.max_map_count is too low
+   2025-02-09T23:28:52.735+00:00: We suggest setting swappiness to 0 or 1, as swapping can cause performance problems.
+------
+
+test> use the_database
+switched to db the_database
+the_database> db.todos.find({})
+[
+  {
+    _id: ObjectId('67a93a33f95a46b11b544ca7'),
+    text: 'Write code',
+    done: true
+  },
+  {
+    _id: ObjectId('67a93a33f95a46b11b544ca8'),
+    text: 'Learn about containers',
+    done: false
+  },
+  {
+    _id: ObjectId('67a93ddb65788ccd22224b7d'),
+    text: 'this is test',
+    done: false,
+    __v: 0
+  },
+  {
+    _id: ObjectId('67a93e0665788ccd22224b7f'),
+    text: 'this is test',
+    done: false,
+    __v: 0
+  },
+  {
+    _id: ObjectId('67a93e6041763ccf8574fc73'),
+    text: 'this is test',
+    done: false,
+    __v: 0
+  },
+  {
+    _id: ObjectId('67a9407741763ccf8574fc77'),
+    text: 'Added new todo from postman after setting added_todos to 9001',
+    done: false,
+    __v: 0
+  }
+]
+the_database> exit
+root@efa76d7eb35a:/# exit
+exit
+juha@Savik:~$ docker exec -it todo-backend-redis-1 bash
+root@3aa8a909dab6:/data# redis-cli
+127.0.0.1:6379> get added_todos
+"9002"
+127.0.0.1:6379> exit
+root@3aa8a909dab6:/data# exit
+exit
+juha@Savik:~$ exit
+exit
+Script done.
