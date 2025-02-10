@@ -1,0 +1,11 @@
+services:
+  todo-frontend-dev:
+    image: node:20
+    volumes:
+      - ./:/usr/src/app
+    working_dir: /usr/src/app
+    environment:
+      - VITE_BACKEND_URL=http://localhost:3000
+    ports:
+      - 5173:5173
+    command: npm run dev -- --host
