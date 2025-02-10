@@ -1,0 +1,43 @@
+juha@Savik:~/git/fullstackopen/part12/part12-containers-applications/todo-app/todo-backend$ REDIS_URL=redis://localhost:6379 MONGO_URL=mongodb://the_username:the_password@localhost:3456/the_database npm run dev
+
+> todo-express-backend@0.0.0 dev
+> nodemon ./bin/www
+
+[nodemon] 2.0.22
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,json
+[nodemon] starting `node ./bin/www`
+POST /todos/ 201 16.859 ms - 74
+GET /todos/statistics 200 1.270 ms - 17
+[nodemon] restarting due to changes...
+[nodemon] starting `node ./bin/www`
+{ added_todos: 3 }
+GET /todos/statistics 200 2.199 ms - 17
+^C
+juha@Savik:~/git/fullstackopen/part12/part12-containers-applications/todo-app/todo-backend$ ^C
+juha@Savik:~/git/fullstackopen/part12/part12-containers-applications/todo-app/todo-backend$ docker compose -f docker-compose.dev.yml down 
+WARN[0000] /home/juha/git/fullstackopen/part12/part12-containers-applications/todo-app/todo-backend/docker-compose.dev.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] Running 3/3
+ ✔ Container todo-backend-mongo-1  Removed                                                                      1.0s 
+ ✔ Container todo-backend-redis-1  Removed                                                                      0.9s 
+ ✔ Network todo-backend_default    Removed                                                                      0.7s 
+juha@Savik:~/git/fullstackopen/part12/part12-containers-applications/todo-app/todo-backend$ docker compose -f docker-compose.dev.yml up -d
+WARN[0000] /home/juha/git/fullstackopen/part12/part12-containers-applications/todo-app/todo-backend/docker-compose.dev.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] Running 3/3
+ ✔ Network todo-backend_default    Created                                                                      0.2s 
+ ✔ Container todo-backend-redis-1  Started                                                                      0.7s 
+ ✔ Container todo-backend-mongo-1  Started                                                                      0.6s 
+juha@Savik:~/git/fullstackopen/part12/part12-containers-applications/todo-app/todo-backend$ REDIS_URL=redis://localhost:6379 MONGO_URL=mongodb://the_username:the_password@localhost:3456/the_database npm run dev
+
+> todo-express-backend@0.0.0 dev
+> nodemon ./bin/www
+
+[nodemon] 2.0.22
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,json
+[nodemon] starting `node ./bin/www`
+POST /todos/ 201 16.972 ms - 74
+{ added_todos: 4 }
+GET /todos/statistics 200 1.375 ms - 17
