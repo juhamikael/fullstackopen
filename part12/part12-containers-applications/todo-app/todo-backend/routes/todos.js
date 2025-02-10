@@ -35,6 +35,7 @@ router.get('/statistics', async (req, res) => {
   try {
     let count = await getAsync(COUNTER_KEY);
     count = count ? Number(count) : 0;
+    console.log({added_todos: count});
     res.json({ added_todos: count });
   } catch (error) {
     console.error('Error getting statistics:', error);
