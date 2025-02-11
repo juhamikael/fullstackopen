@@ -1,0 +1,77 @@
+services:
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: bloglist-reverse-proxy-dev
+    depends_on:
+      - app
+      - server
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "nginx"
+
+  app:
+    build:
+      context: ./frontend
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./frontend/:/usr/src/app
+    container_name: bloglist-frontend-dev
+    environment:
+      - VITE_BACKEND_URL=/api
+      - VITE_PORT=39012
+      - VITE_BACKEND_HOST=http://localhost:8080
+      - VITE_URL=http://localhost:8080/api
+    ports:
+      - "5173:5173"
+    command: npm run dev
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "frontend"
+
+
+  server:
+      build:
+        context: ./backend
+        dockerfile: dev.Dockerfile
+      volumes:
+        - ./backend/:/usr/src/app
+      environment:
+        - MONGODB_URI=mongodb://root:example@mongo:27017/the_database?authSource=admin
+        - PORT=39012
+        - SECRET=your_jwt_secret_here
+      container_name: bloglist-backend-dev
+      depends_on:
+        - mongo
+      logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"
+          max-file: "3"
+          labels: "backend"
+
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: the_database
+    volumes:
+      - ./backend/database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - mongo_data:/data/db
+    logging:
+      driver: "none"
+
+volumes:
+  mongo_data: null
+  redis_data: null
+
