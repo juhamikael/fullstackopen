@@ -1,9 +1,4 @@
-import axios from "axios";
-import { urlBuilder } from "../lib/url";
-
-const route = "/blogs";
-const url = urlBuilder(route);
-console.log("url", url);
+import api from './api'
 
 let token = null;
 
@@ -20,7 +15,7 @@ const getAll = async () => {
     headers: { Authorization: token },
   };
 
-  const response = await axios.get(url, config);
+  const response = await api.get('/blogs', config);
   return response.data;
 };
 
@@ -28,7 +23,7 @@ const getById = async (id) => {
   const config = {
     headers: { Authorization: token },
   };
-  const response = await axios.get(`${url}/${id}`, config);
+  const response = await api.get(`/blogs/${id}`, config);
   return response.data;
 };
 
@@ -36,12 +31,12 @@ const create = async (newObject) => {
   const config = {
     headers: { Authorization: token },
   };
-  const response = await axios.post(url, newObject, config);
+  const response = await api.post('/blogs', newObject, config);
   return response.data;
 };
 
 const update = async (id, newObject) => {
-  const response = await axios.put(`${url}/${id}`, newObject);
+  const response = await api.put(`/blogs/${id}`, newObject);
   return response.data;
 };
 
@@ -49,7 +44,7 @@ const deleteBlog = async (id) => {
   const config = {
     headers: { Authorization: token },
   };
-  const response = await axios.delete(`${url}/${id}`, config);
+  const response = await api.delete(`/blogs/${id}`, config);
   return response.data;
 };
 
@@ -57,8 +52,8 @@ const commentBlog = async (id, comment) => {
   const config = {
     headers: { Authorization: token },
   };
-  const response = await axios.post(
-    `${url}/${id}/comments`,
+  const response = await api.post(
+    `/blogs/${id}/comments`,
     { comment: comment.content },
     config
   );

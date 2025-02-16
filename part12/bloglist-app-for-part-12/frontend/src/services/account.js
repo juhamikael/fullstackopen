@@ -1,13 +1,8 @@
-import axios from "axios";
-import { urlBuilder } from "../lib/url";
-
-const route = "/users";
-const url = urlBuilder(route);
+import api from './api'
 
 const createAccount = async (credentials) => {
-  console.log("url", url);
   try {
-    const response = await axios.post(url, credentials);
+    const response = await api.post('/users', credentials);
     return response.data;
   } catch (error) {
     throw error;
@@ -15,7 +10,7 @@ const createAccount = async (credentials) => {
 };
 
 const deleteAccount = async (id) => {
-  const response = await axios.delete(`${url}/${id}`);
+  const response = await api.delete(`/users/${id}`);
   return response.data;
 };
 

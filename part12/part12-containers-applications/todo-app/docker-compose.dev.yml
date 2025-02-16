@@ -15,7 +15,7 @@ services:
       context: ./todo-frontend
       dockerfile: dev.Dockerfile
     volumes:
-      - ./todo-frontend/:/usr/src/app
+      - ./bloglist-frontend-dev/:/usr/src/app
     container_name: todo-app-frontend-dev
     environment:
       - VITE_BACKEND_URL=/api
