@@ -13,4 +13,10 @@ describe('Todo component', () => {
     const todoElement = screen.getByText('Introduction to Containers').parentElement;
     expect(todoElement).toHaveClass('completed');
   });
+
+  // Temporary test to check that build fails if tests fail
+  // it('should not pass', () => {
+  //   expect(true).toBe(false);
+  // });
+  
 });
