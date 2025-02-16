@@ -14,7 +14,7 @@
 | part9    |                          [TypeScript](https://github.com/juhamikael/fullstackopen/tree/main/part9)                          | :heavy_check_mark: | 13.11.2023         |
 | part10   |                                                        React Native                                                         |        :x:         |                    |
 | part11   |                          [CI/CD](https://github.com/juhamikael/fullstackopen/tree/main/part11)                              | :heavy_check_mark: | 31.10.2024         |
-| part12   |          [Containers](https://github.com/juhamikael/fullstackopen/tree/main/part12/part12-containers-applications)          |        :x:         |                    |
+| part12   |          [Containers](https://github.com/juhamikael/fullstackopen/tree/main/part12)                                         |        :x:         |                    |
 | part13   |                 [Using relational databases](https://github.com/juhamikael/fullstackopen/tree/main/part13)                  | :heavy_check_mark: | 04.02.2024         |
 ---
 
