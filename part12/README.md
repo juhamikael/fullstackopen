@@ -14,3 +14,4 @@
 | 12.17 - 12.19 | [12.17-12.19](https://github.com/juhamikael/fullstackopen/commit/e036e09a44a0626260457ff15eda3fcb0eeed21f) & [update 12.19](https://github.com/juhamikael/fullstackopen/commit/b6385d6d1bfaa8fe0c54b8e63ca853ffb2798ba3) |
 | 12.20         | [12.20](https://github.com/juhamikael/fullstackopen/commit/3116d06e3b85bef288644ab7243bcb268cc20f4b)                                                                                                                     |
 | 12.21         | [12.21](https://github.com/juhamikael/fullstackopen/commit/310ead34557e962b76b582dd6accd19d564b02a2) & [update 12.21](https://github.com/juhamikael/fullstackopen/commit/dd6872d04c570fd5140e26556b62c2702eca5ae4)       |
+| 12.22         | [12.22 and small changes to 12.21](https://github.com/juhamikael/fullstackopen/commit/9952d425f03f4f00ad84bd8212782676b03d472f)                                                                                          |
