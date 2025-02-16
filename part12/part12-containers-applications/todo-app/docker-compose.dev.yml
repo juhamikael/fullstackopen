@@ -38,6 +38,7 @@ services:
 
   mongo:
     image: mongo
+    container_name: mongo-test
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
@@ -49,9 +50,12 @@ services:
   redis:
     image: redis
     command: ['redis-server', '--appendonly', 'yes']
+    container_name: redis-test
     volumes:
       - redis_data:/data
 
 volumes:
-  mongo_data: null
-  redis_data: null
+  mongo_data:
+    name: mongo-test-data
+  redis_data:
+    name: redis-test-data
