@@ -15,12 +15,6 @@ docker compose -f docker-compose.dev.yml down --rmi local
 # docker compose -f docker-compose.dev.yml down -v --rmi local
 ```
 
-Verify nothing is running for this project
-```bash
-docker compose -f docker-compose.dev.yml ps
-docker compose -f docker-compose.dev.yml logs
-```
-
 ## Start in production mode:
 ```bash
 docker compose -f docker-compose.yml up --build -d
