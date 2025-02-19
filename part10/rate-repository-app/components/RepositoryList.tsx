@@ -1,12 +1,20 @@
-import useRepositories from "hooks/useRepositories";
-import { FlatList, View, StyleSheet, Text, Image, TextStyle } from "react-native";
-import { RepositoryNode } from "../types";
+import { GET_REPOSITORIES } from "@/graphql/queries";
+import useRepositories from "@/hooks/useRepositories";
+import { formattedStats } from "@/utils/lib";
+import { FC, useState } from "react";
+import { FlatList, View, StyleSheet, Text, Image, TextStyle, TextInput } from "react-native";
+import { Button } from "react-native-paper"
+import { Link } from "react-router-native";
+import { RepositoryEdge, RepositoryNode } from "types";
+import RepositorySort, { sortOptions, SortOption } from './RepositorySort';
 
 interface RepositoryItemProps {
   repository: RepositoryNode;
+  view: "list" | "detail";
+  children?: React.ReactNode;
 }
 
-const repositoryItemTheme = {
+export const repositoryItemTheme = {
   fullName: {
     fontSize: 16,
     fontWeight: "bold" as "bold",
@@ -18,13 +26,16 @@ const repositoryItemTheme = {
   }
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 25,
+    width: '100%',
   },
   separator: {
-    height: 10,
+    height: 3,
+    width: '100%',
     backgroundColor: "#e1e5e8",
+    borderRadius: 20,
   },
   image: {
     width: 50,
@@ -36,6 +47,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     paddingLeft: 10,
+    flex: 1,
+    maxWidth: '80%',
     ...repositoryItemTheme as TextStyle,
   },
   badge: {
@@ -43,6 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0063e1",
     borderRadius: 5,
     padding: 4,
+    paddingHorizontal: 15,
     marginTop: 8,
   },
   badgeText: {
@@ -50,42 +64,64 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: "column",
+    flex: 1,
+    alignItems: "center",
+    paddingHorizontal: 8,
   },
   repositoryStats: {
     paddingTop: 20,
     flexDirection: "row",
     justifyContent: "space-around",
+    width: "100%",
+    flexWrap: "wrap",
+  },
+  searchBar: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: "white",
+    height: 40,
+    borderRadius: 30,
+    color: "black",
+    fontSize: 16,
+  },
+  searchBarContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 30,
+    marginTop: 20,
+    alignSelf: 'center'
+  },
+  statText: {
+    fontSize: 13,
+    textAlign: "center",
   }
+
 });
 
-
-const Stats = ({ count, label }: { count: number, label: string }) => {
-  const formattedStats = (count: number) => {
-    return count > 1000 ? `${Math.round(count / 100) / 10}k` : count;
-  }
-
+export const Stats = ({ count, label }: { count: number, label: string }) => {
   return (
     <View style={styles.statsContainer}>
       <Text style={{
         fontWeight: "bold" as "bold",
         textAlign: "center",
+        fontSize: 14,
       }}>
         {formattedStats(count)}
       </Text>
-      <Text style={{
-        textAlign: "center",
-      }}>
+      <Text style={styles.statText}>
         {label}
       </Text>
     </View>
   )
 }
 
-const RepositoryItem = ({ repository }: RepositoryItemProps) => {
+export const RepositoryItem = ({ repository }: RepositoryItemProps) => {
   const { fullName, description, language, forksCount, stargazersCount, ratingAverage, reviewCount, ownerAvatarUrl } = repository;
 
   return (
-    <View style={styles.container}>
+    <View testID="repositoryItem" style={styles.container}>
       <View style={styles.header}>
         <Image source={{ uri: ownerAvatarUrl || "" }} style={styles.image} />
         <View style={styles.headerText}>
@@ -106,16 +142,75 @@ const RepositoryItem = ({ repository }: RepositoryItemProps) => {
   );
 };
 
-const ItemSeparator = () => <View style={styles.separator} />;
-const RepositoryList = () => {
-  const { repositories } = useRepositories();
-  const repositoryNodes = repositories?.edges.map(edge => edge.node) ?? [];
+const RepositoryLink = ({ repository, children, view }: RepositoryItemProps) => {
+  return (
+    <Link
+      to={`/repository/${repository.id}`}
+      style={{ backgroundColor: 'transparent' }}
+      underlayColor="transparent"
+    >
+      <RepositoryItem repository={repository} view={view} />
+    </Link>
+  )
+}
+
+type TestRepositoryListProps = {
+  testRepositories?: RepositoryEdge[];
+}
+
+export const ItemSeparator = () => <View style={styles.separator} />;
+
+const SearchBar = ({ onSearch }: { onSearch: (keyword: string) => void }) => {
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  return (
+    <View style={styles.searchBarContainer}>
+      <TextInput
+        placeholder="Search..."
+        style={styles.searchBar}
+        value={searchKeyword}
+        onChangeText={setSearchKeyword}
+    />
+      <Button
+        onPress={() => onSearch(searchKeyword)}
+        style={{ padding: 5, width: 50 }}
+        icon="magnify"
+      >
+        {""}
+      </Button>
+    </View>
+  );
+};
+
+const RepositoryList: FC<TestRepositoryListProps> = ({ testRepositories }) => {
+  const [selectedSort, setSelectedSort] = useState<SortOption>(sortOptions[0]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const { repositories, loading, error } = useRepositories({
+    orderBy: selectedSort.orderBy,
+    orderDirection: selectedSort.orderDirection,
+    searchKeyword,
+  });
+
+  if (loading) return null;
+  if (error) return null;
+
+  const repositoryNodes = !testRepositories ? repositories?.edges.map((edge: RepositoryEdge) => edge.node) : testRepositories;
 
   return (
     <FlatList
       data={repositoryNodes}
+      ListHeaderComponent={
+        <View style={{ width: '90%', alignSelf: 'center' }}>
+          <SearchBar onSearch={setSearchKeyword} />
+          <RepositorySort
+            selectedSort={selectedSort}
+            onSelect={setSelectedSort}
+          />
+        </View>
+      }
+      renderItem={({ item }) => <RepositoryLink repository={item} view="list" />}
+      keyExtractor={(item) => item.id}
       ItemSeparatorComponent={ItemSeparator}
-      renderItem={({ item }) => <RepositoryItem repository={item} />}
     />
   );
 };

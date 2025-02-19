@@ -1,46 +1,32 @@
-import { useState, useEffect } from 'react';
+import { GET_REPOSITORIES } from '@/graphql/queries';
+import { useQuery } from '@apollo/client';
+import { RepositoryNode } from '@/types';
 
-interface RepositoryNode {
-    id: string;
-    name: string;
-    ownerName: string;
-    createdAt: Date | null;
-    fullName: string;
-    reviewCount: number;
-    ratingAverage: number;
-    forksCount: number;
-    stargazersCount: number;
-    description: string | null;
-    language: string | null;
-    ownerAvatarUrl: string | null;
-}
-
-interface RepositoryEdge {
+export interface RepositoryEdge {
     node: RepositoryNode;
 }
 
-interface RepositoryConnection {
+export interface RepositoryConnection {
     edges: RepositoryEdge[];
 }
 
-const useRepositories = () => {
-    const [repositories, setRepositories] = useState<RepositoryConnection | null>(null);
+interface UseRepositoriesParams {
+    orderBy?: 'CREATED_AT' | 'RATING_AVERAGE';
+    orderDirection?: 'ASC' | 'DESC';
+    searchKeyword?: string;
+}
 
-    const fetchRepositories = async () => {
-        try {
-            const response = await fetch('http://192.168.1.167:5000/api/repositories');
-            const json: RepositoryConnection = await response.json();
-            setRepositories(json);
-        } catch (error) {
-            console.error('Error fetching repositories:', error);
-        }
-    };
+const useRepositories = ({ orderBy = 'CREATED_AT', orderDirection = 'DESC', searchKeyword = "" }: UseRepositoriesParams = {}) => {
+    const { data, error, loading } = useQuery(GET_REPOSITORIES, {
+        variables: {
+            orderBy,
+            orderDirection,
+            searchKeyword,
+        },
+        fetchPolicy: 'cache-and-network',
+    });
 
-    useEffect(() => {
-        fetchRepositories();
-    }, []);
-
-    return { repositories };
+    return { repositories: data?.repositories, loading, error };
 };
 
 export default useRepositories;
