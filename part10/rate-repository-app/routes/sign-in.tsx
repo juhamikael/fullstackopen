@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import SignIn from "../components/SignIn";
+import SignIn from "components/SignIn";
 
 const SignInRoute = () => {
     return (

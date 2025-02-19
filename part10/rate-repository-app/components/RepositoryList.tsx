@@ -1,12 +1,19 @@
-import useRepositories from "hooks/useRepositories";
+import { GET_REPOSITORIES } from "@/graphql/queries";
+import useRepositories from "@/hooks/useRepositories";
+import { formattedStats } from "@/utils/lib";
+import { useQuery } from "@apollo/client";
+import { FC } from "react";
 import { FlatList, View, StyleSheet, Text, Image, TextStyle } from "react-native";
-import { RepositoryNode } from "../types";
+import { Link } from "react-router-native";
+import { RepositoryEdge, RepositoryNode } from "types";
 
 interface RepositoryItemProps {
   repository: RepositoryNode;
+  view: "list" | "detail";
+  children?: React.ReactNode;
 }
 
-const repositoryItemTheme = {
+export const repositoryItemTheme = {
   fullName: {
     fontSize: 16,
     fontWeight: "bold" as "bold",
@@ -18,13 +25,16 @@ const repositoryItemTheme = {
   }
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 25,
+    width: '100%',
   },
   separator: {
-    height: 10,
+    height: 3,
+    width: '100%',
     backgroundColor: "#e1e5e8",
+    borderRadius: 20,
   },
   image: {
     width: 50,
@@ -36,6 +46,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     paddingLeft: 10,
+    flex: 1,
+    maxWidth: '80%',
     ...repositoryItemTheme as TextStyle,
   },
   badge: {
@@ -43,6 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0063e1",
     borderRadius: 5,
     padding: 4,
+    paddingHorizontal: 15,
     marginTop: 8,
   },
   badgeText: {
@@ -50,72 +63,98 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: "column",
+    flex: 1,
+    alignItems: "center",
+    paddingHorizontal: 8,
   },
   repositoryStats: {
     paddingTop: 20,
     flexDirection: "row",
     justifyContent: "space-around",
+    width: "100%",
+    flexWrap: "wrap",
+  },
+  statText: {
+    fontSize: 13,
+    textAlign: "center",
   }
 });
 
-
-const Stats = ({ count, label }: { count: number, label: string }) => {
-  const formattedStats = (count: number) => {
-    return count > 1000 ? `${Math.round(count / 100) / 10}k` : count;
-  }
+export const Stats = ({ count, label }: { count: number, label: string }) => {
+  const formattedCount = formattedStats(count);
 
   return (
     <View style={styles.statsContainer}>
       <Text style={{
         fontWeight: "bold" as "bold",
         textAlign: "center",
+        fontSize: 14,
       }}>
         {formattedStats(count)}
       </Text>
-      <Text style={{
-        textAlign: "center",
-      }}>
+      <Text style={styles.statText}>
         {label}
       </Text>
     </View>
   )
 }
 
-const RepositoryItem = ({ repository }: RepositoryItemProps) => {
+
+
+export const RepositoryItem = ({ repository }: RepositoryItemProps) => {
   const { fullName, description, language, forksCount, stargazersCount, ratingAverage, reviewCount, ownerAvatarUrl } = repository;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={{ uri: ownerAvatarUrl || "" }} style={styles.image} />
-        <View style={styles.headerText}>
-          <Text style={repositoryItemTheme.fullName}>{fullName}</Text>
-          <Text style={repositoryItemTheme.description}>{description}</Text>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{language}</Text>
+      <View testID="repositoryItem" style={styles.container}>
+        <View style={styles.header}>
+          <Image source={{ uri: ownerAvatarUrl || "" }} style={styles.image} />
+          <View style={styles.headerText}>
+            <Text style={repositoryItemTheme.fullName}>{fullName}</Text>
+            <Text style={repositoryItemTheme.description}>{description}</Text>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{language}</Text>
+            </View>
           </View>
         </View>
+        <View style={styles.repositoryStats}>
+          <Stats count={stargazersCount} label="Stars" />
+          <Stats count={forksCount} label="Forks" />
+          <Stats count={reviewCount} label="Reviews" />
+          <Stats count={ratingAverage} label="Rating" />
+        </View>
       </View>
-      <View style={styles.repositoryStats}>
-        <Stats count={stargazersCount} label="Stars" />
-        <Stats count={forksCount} label="Forks" />
-        <Stats count={reviewCount} label="Reviews" />
-        <Stats count={ratingAverage} label="Rating" />
-      </View>
-    </View>
   );
 };
 
-const ItemSeparator = () => <View style={styles.separator} />;
-const RepositoryList = () => {
-  const { repositories } = useRepositories();
-  const repositoryNodes = repositories?.edges.map(edge => edge.node) ?? [];
+const RepositoryLink = ({ repository, children, view }: RepositoryItemProps) => {
+  return (
+    <Link 
+      to={`/repository/${repository.id}`}
+      style={{ backgroundColor: 'transparent' }}
+      underlayColor="transparent"
+    >
+      <RepositoryItem repository={repository} view={view} />
+    </Link>
+  )
+}
+
+type TestRepositoryListProps = {
+  testRepositories?: RepositoryEdge[];
+}
+
+export const ItemSeparator = () => <View style={styles.separator} />;
+const RepositoryList: FC<TestRepositoryListProps> = ({ testRepositories }) => {
+  const { repositories, loading, error } = useRepositories();
+
+  if (loading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error: {error.message}</Text>;
+  const repositoryNodes = !testRepositories ? repositories?.edges.map((edge: RepositoryEdge) => edge.node) : testRepositories;
 
   return (
     <FlatList
       data={repositoryNodes}
       ItemSeparatorComponent={ItemSeparator}
-      renderItem={({ item }) => <RepositoryItem repository={item} />}
+      renderItem={({ item }) => <RepositoryLink repository={item} view="list" />}
     />
   );
 };
