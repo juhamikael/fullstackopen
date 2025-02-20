@@ -12,7 +12,7 @@
 | part7    | [React router, custom hooks, styling app with CSS and webpack](https://github.com/juhamikael/fullstackopen/tree/main/part7) | :heavy_check_mark: | 08.10.2023         |
 | part8    |                           [GraphQL](https://github.com/juhamikael/fullstackopen/tree/main/part8)                            | :heavy_check_mark: | 18.12.2023         |
 | part9    |                          [TypeScript](https://github.com/juhamikael/fullstackopen/tree/main/part9)                          | :heavy_check_mark: | 13.11.2023         |
-| part10   |                                                        React Native                                                         |        :x:         |                    |
+| part10   |[React Native]([https://github.com/juhamikael/fullstackopen/tree/main/part9](https://github.com/juhamikael/fullstackopen/tree/main/part10/rate-repository-app)         | :heavy_check_mark: | 20.02.2025         |
 | part11   |                          [CI/CD](https://github.com/juhamikael/fullstackopen/tree/main/part11)                              | :heavy_check_mark: | 31.10.2024         |
 | part12   |          [Containers](https://github.com/juhamikael/fullstackopen/tree/main/part12)                                         | :heavy_check_mark: | 16.02.2025         |
 | part13   |                 [Using relational databases](https://github.com/juhamikael/fullstackopen/tree/main/part13)                  | :heavy_check_mark: | 04.02.2024         |
