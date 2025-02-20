@@ -178,8 +178,9 @@ const ReviewItem = ({ review }: { review: Review }) => (
 
 const Repository = () => {
     const { id } = useParams();
-    const { repository, loading, error, reviews } = useRepository(id as string);
+    const { repository, loading, error, reviews, fetchMore, hasNextPage } = useRepository(id as string);
     const [isOpeningGithub, setIsOpeningGithub] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
 
     if (loading) return <Text style={styles.title}>Loading...</Text>;
     if (error) return <Text style={styles.title}>Error: {error.message}</Text>;
@@ -193,6 +194,19 @@ const Repository = () => {
             await Linking.openURL(`https://github.com/${fullName}`);
         } finally {
             setIsOpeningGithub(false);
+        }
+    };
+
+    const onEndReach = async () => {
+        if (loadingMore || !hasNextPage) return;
+        
+        setLoadingMore(true);
+        try {
+            await fetchMore();
+        } catch (error) {
+            console.error('Error loading more reviews:', error);
+        } finally {
+            setLoadingMore(false);
         }
     };
 
@@ -254,16 +268,30 @@ const Repository = () => {
         </>
     );
 
+    const renderFooter = () => {
+        if (loadingMore) {
+            return (
+                <View style={{ padding: 16 }}>
+                    <Text style={{ textAlign: 'center' }}>Loading more reviews...</Text>
+                </View>
+            );
+        }
+        return null;
+    };
+
     return (
         <FlatList
             data={reviews}
             renderItem={({ item }) => <ReviewItem review={item.node} />}
-            keyExtractor={item => item.node.id}
+            keyExtractor={(item, index) => `${item.node.id}-${index}`}
             ListHeaderComponent={renderHeader}
+            ListFooterComponent={renderFooter}
             style={styles.container}
             contentContainerStyle={styles.contentContainer}
             showsHorizontalScrollIndicator={false}
             ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+            onEndReached={onEndReach}
+            onEndReachedThreshold={0.5}
         />
     );
 };

@@ -1,52 +1,45 @@
 import { GET_REPOSITORY_WITH_REVIEWS } from '@/graphql/queries';
 import { useQuery } from '@apollo/client';
-import { Repository, ReviewEdge } from '@/types';
+import { ReviewEdge } from '@/types';
 
-interface PageInfo {
-    endCursor: string;
-    hasNextPage: boolean;
-}
 
-interface SingleRepositoryData {
-    repository: Repository & {
-        reviews: {
-            edges: (ReviewEdge & { cursor: string })[];
-            pageInfo: PageInfo;
-        };
-    };
-}
 
-const useRepository = (repositoryId: string) => {
-    const { data, error, loading, fetchMore } = useQuery<SingleRepositoryData>(GET_REPOSITORY_WITH_REVIEWS, {
-        variables: { 
-            repositoryId,
-            first: 5
+const useRepository = (id: string) => {
+    const { data, loading, error, fetchMore } = useQuery(GET_REPOSITORY_WITH_REVIEWS, {
+        variables: {
+            repositoryId: id,
+            first: 2,
         },
-        fetchPolicy: 'cache-and-network'
+        fetchPolicy: 'cache-and-network',
     });
 
-    const handleFetchMore = () => {
+    const handleFetchMore = async () => {
         const canFetchMore = !loading && data?.repository.reviews.pageInfo.hasNextPage;
-        
         if (!canFetchMore) {
             return;
         }
 
-        fetchMore({
+        await fetchMore({
             variables: {
+                repositoryId: id,
+                first: 2,
                 after: data.repository.reviews.pageInfo.endCursor,
-                first: 5
             },
         });
     };
 
-    return { 
+    const reviews = data?.repository?.reviews?.edges || [];
+    const uniqueReviews = reviews.filter((review: ReviewEdge & { cursor: string }, index: number, self: (ReviewEdge & { cursor: string })[]) => 
+        index === self.findIndex((r: ReviewEdge & { cursor: string }) => r.node.id === review.node.id)
+    );
+
+    return {
         repository: data?.repository,
-        loading, 
+        reviews: uniqueReviews,
+        loading,
         error,
-        reviews: data?.repository?.reviews?.edges || [],
         fetchMore: handleFetchMore,
-        hasNextPage: data?.repository.reviews.pageInfo.hasNextPage
+        hasNextPage: data?.repository?.reviews?.pageInfo?.hasNextPage,
     };
 };
 

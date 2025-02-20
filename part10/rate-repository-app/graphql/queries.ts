@@ -71,7 +71,14 @@ export const GET_REPOSITORY_WITH_REVIEWS = gql`
       reviews(first: $first, after: $after) {
         edges {
           node {
-            ...ReviewDetails 
+            id
+            text
+            rating
+            createdAt
+            user {
+              id
+              username
+            }
           }
           cursor
         }
@@ -83,7 +90,6 @@ export const GET_REPOSITORY_WITH_REVIEWS = gql`
     }
   }
   ${REPOSITORY_DETAILS}
-  ${REVIEW_DETAILS}
 `;
 
 

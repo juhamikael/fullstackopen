@@ -167,6 +167,7 @@ const SearchBar = ({ onSearch }: { onSearch: (keyword: string) => void }) => {
     <View style={styles.searchBarContainer}>
       <TextInput
         placeholder="Search..."
+        placeholderTextColor="gray"
         style={styles.searchBar}
         value={searchKeyword}
         onChangeText={setSearchKeyword}
